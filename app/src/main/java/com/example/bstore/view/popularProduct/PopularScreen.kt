@@ -1,5 +1,6 @@
-package com.example.bstore.view.Screen
+package com.example.bstore.view.popularProduct
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +20,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,9 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.bstore.ui.theme.back
+import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
-import com.example.bstore.view.PopularProductItem
+import com.example.bstore.utils.LoadingAndErrorView
 import com.example.bstore.viewmodel.ProductViewModel
 
 @Composable
@@ -51,9 +51,9 @@ fun PopularScreen(
     viewModel: ProductViewModel= hiltViewModel()
 ){
     val configuration = LocalConfiguration.current
-    val isLandScape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val isLandScape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    val products by viewModel.products.collectAsState()
+    val popularProducts by viewModel.popularProducts.collectAsState()
     val selectedCategories by viewModel.selectedCategories
     var expanded by remember { mutableStateOf(false) }
     val categories = listOf("tv", "audio", "gaming", "laptop", "mobile", "appliances")
@@ -64,7 +64,7 @@ fun PopularScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(back),
+            .background(background),
         horizontalAlignment = AbsoluteAlignment.Right
     ){
         Row (
@@ -145,30 +145,13 @@ fun PopularScreen(
             }
         }
 
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            isError != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = isError ?: "Error",
-                        color = Color.Black,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-
-            products.isEmpty() -> {
+        LoadingAndErrorView(
+            isLoading = isLoading,
+            isError = isError,
+            modifier = Modifier
+        ) {
+            when {
+            popularProducts.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Can't find product",
@@ -181,11 +164,11 @@ fun PopularScreen(
                 if (isLandScape) {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(4),
-                        modifier = Modifier.padding(32.dp),
+                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp, end = 16.dp, top = 8.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        items(products) { product ->
+                        items(popularProducts) { product ->
                             PopularProductItem(product, navController)
                             Spacer(modifier = Modifier.height(16.dp))
                         }
@@ -197,13 +180,14 @@ fun PopularScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        items(products) { product ->
+                        items(popularProducts) { product ->
                             PopularProductItem(product, navController)
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
             }
+        }
         }
     }
 }

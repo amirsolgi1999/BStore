@@ -1,10 +1,8 @@
-package com.example.bstore.view
+package com.example.bstore.view.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.bstore.navigation.Screen
-import com.example.bstore.ui.theme.back
+import com.example.bstore.ui.theme.background
 import com.example.bstore.viewmodel.LoginViewModel
 
 @Composable
@@ -29,11 +27,18 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    LaunchedEffect (isLoggedIn){
+        if (isLoggedIn){
+            navController.navigate(Screen.Home.route){
+                popUpTo(Screen.Login.route){inclusive=true}
+            }
+        }
+    }
 
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(back)
+            .background(background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

@@ -11,7 +11,7 @@ interface StoreApiService {
     suspend fun getPopularProducts(): ProductResponse
 
     @GET("products")
-    suspend fun newInProducts(
+    suspend fun getNewInProducts(
         @Query("page") page:Int=2
     ): ProductResponse
 
@@ -20,7 +20,7 @@ interface StoreApiService {
         @Query("type") category:String
     ): ProductResponse
 
-    @GET("api/users")
+    @GET("users")
     suspend fun getUsers(): UserResponse
 
 }

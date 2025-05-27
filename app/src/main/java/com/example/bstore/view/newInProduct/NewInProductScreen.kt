@@ -1,4 +1,4 @@
-package com.example.bstore.view.Screen
+package com.example.bstore.view.newInProduct
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.AbsoluteAlignment
@@ -29,8 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.bstore.ui.theme.back
-import com.example.bstore.view.PopularProductItem
+import com.example.bstore.ui.theme.background
+import com.example.bstore.utils.LoadingAndErrorView
+import com.example.bstore.view.popularProduct.PopularProductItem
 import com.example.bstore.viewmodel.ProductViewModel
 
 @Composable
@@ -46,7 +46,7 @@ fun NewInProductScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(back),
+            .background(background),
         horizontalAlignment = AbsoluteAlignment.Right
     ){
 
@@ -66,30 +66,12 @@ fun NewInProductScreen(
                 contentDescription = ""
             )
         }
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            isError != null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = isError ?: "Error",
-                        color = Color.Red,
-                        fontSize = 16.sp
-                    )
-                }
-
-            }
+        LoadingAndErrorView(
+            isLoading = isLoading,
+            isError = isError,
+            modifier = Modifier
+        ) {
+            when {
 
             products.isEmpty() ->{
                 Box(
@@ -122,6 +104,7 @@ fun NewInProductScreen(
                     }
                 }
             }
+        }
         }
     }
 }

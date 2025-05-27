@@ -1,4 +1,4 @@
-package com.example.bstore.view
+package com.example.bstore.view.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bstore.model.product.Product
 import com.example.bstore.ui.theme.onsec
+import com.example.bstore.view.ProductItem
 
 @Composable
 fun ProductSection(
@@ -49,7 +50,7 @@ fun ProductSection(
     }
     LazyRow (
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(start = 16.dp, top = 8.dp, bottom =8.dp)
     ){
         items(products){product ->
             ProductItem( product,navController)

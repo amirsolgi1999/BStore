@@ -2,8 +2,7 @@ package com.example.bstore.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.bstore.ConnectivityObserver
-import com.example.bstore.NetworkStatusTracker
+import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.model.StoreApiService
 import com.example.bstore.model.RetrofitInstance.BASE_URL
 import com.example.bstore.model.appDatabase.StoreDatabase
@@ -38,6 +37,10 @@ object Module {
 
     @Provides
     @Singleton
+    fun provideContext1(@ApplicationContext context: Context): Context = context
+
+    @Provides
+    @Singleton
     fun provideContext(application: android.app.Application): Context {
         return application.applicationContext
     }
@@ -52,20 +55,9 @@ object Module {
         ).build()
     }
 
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object NetworkModule {
-        @Provides
-        @Singleton
-        fun provideConnectivityObserver(@ApplicationContext context: Context): ConnectivityObserver {
-            return ConnectivityObserver(context)
-        }
-    }
-
     @Provides
     @Singleton
-    fun provideNetworkStatusTracker(@ApplicationContext context: Context):NetworkStatusTracker{
+    fun provideNetworkStatusTracker(@ApplicationContext context: Context): NetworkStatusTracker {
         return NetworkStatusTracker(context)
     }
 }

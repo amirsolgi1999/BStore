@@ -1,46 +1,65 @@
-package com.example.bstore
+package com.example.bstore.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.inject.Inject
 
 
-class NetworkStatusTracker(context: Context) {
+@HiltViewModel
+class NetworkStatusTracker @Inject constructor(
+    context: Context
+) : ViewModel() {
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val _isConnected = MutableLiveData<Boolean>()
     val isConnected: LiveData<Boolean> = _isConnected
     private val _isInternetWorking = MutableLiveData<Boolean>()
     val isInternetWorking: LiveData<Boolean> = _isInternetWorking
 
-    init {
-        val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                _isConnected.postValue(true)
-                checkInternetAvailability()
-            }
-
-            override fun onLost(network: Network) {
-                _isConnected.postValue(false)
-                _isInternetWorking.postValue(false)
-            }
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            _isConnected.postValue(true)
+            checkInternetAvailability()
         }
 
+        override fun onLost(network: Network) {
+            _isConnected.postValue(false)
+            _isInternetWorking.postValue(false)
+        }
+    }
+
+    init {
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
+        try {
+            connectivityManager.registerNetworkCallback(request, networkCallback)
+            _isConnected.postValue(isNetworkAvailable())
+            checkInternetAvailability()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
-        connectivityManager.registerNetworkCallback(request, networkCallback)
-        checkInternetAvailability() // چک اولیه هنگام شروع
+    override fun onCleared() {
+        super.onCleared()
+        try {
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun isNetworkAvailable(): Boolean {
@@ -50,11 +69,11 @@ class NetworkStatusTracker(context: Context) {
     }
 
     private fun checkInternetAvailability() {
-        kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val isWorking = try {
-                val url = URL("https://www.google.com") // یا آدرس API خودتون
+                val url = URL("https://www.google.com")
                 val connection = url.openConnection() as HttpURLConnection
-                connection.connectTimeout = 2000 // 2 ثانیه
+                connection.connectTimeout = 2000
                 connection.connect()
                 connection.responseCode == 200
             } catch (e: IOException) {

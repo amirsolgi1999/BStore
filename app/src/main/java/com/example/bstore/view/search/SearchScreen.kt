@@ -1,4 +1,4 @@
-package com.example.bstore.view.Screen
+package com.example.bstore.view.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,6 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -32,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.bstore.NetworkStatusTracker
+import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.R
 import com.example.bstore.model.product.Product
-import com.example.bstore.ui.theme.back
+import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
-import com.example.bstore.view.PopularProductItem
-import com.example.bstore.view.SearchBar
-import com.example.bstore.view.TopBarA
+import com.example.bstore.view.popularProduct.PopularProductItem
+import com.example.bstore.view.home.SearchBar
+import com.example.bstore.view.home.TopBarA
 import com.example.bstore.viewmodel.ProductViewModel
 
 
@@ -52,14 +51,13 @@ fun SearchScreen(
 
 
     val searchQuery by viewModel.searchProduct
-    val filterProducts by viewModel.filteredProducts
-
+    val filterProducts by viewModel.filteredPopularProducts
     val isConnected by networkStatusTracker.isConnected.observeAsState(initial = networkStatusTracker.isNetworkAvailable())
     var showRetry by remember { mutableStateOf(false) }
 
     LaunchedEffect(isConnected) {
         if (isConnected) {
-            viewModel.products
+            viewModel.popularProducts
             showRetry = false
         } else {
             showRetry = true
@@ -74,7 +72,7 @@ fun SearchScreen(
             ) {
                 Text("Your internet is down!")
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { viewModel.products },
+                Button(onClick = { viewModel.popularProducts },
                     colors = ButtonColors(
                         containerColor = onsec,
                         contentColor = Color.White,
@@ -91,7 +89,7 @@ fun SearchScreen(
             Column (
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(back)
+                    .background(background)
             ){
                 TopBarA(
                     iconStart =null,
@@ -122,7 +120,7 @@ fun SearchScreen(
                             contentDescription = "sorry"
                         )
 
-                        Text("Search Product")
+                        Text("Search a Product.")
                     }
                 }
             }

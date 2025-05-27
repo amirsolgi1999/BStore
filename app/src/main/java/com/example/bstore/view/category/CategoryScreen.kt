@@ -1,12 +1,10 @@
-package com.example.bstore.view.Screen
+package com.example.bstore.view.category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +15,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,27 +28,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.bstore.ui.theme.back
+import com.example.bstore.navigation.Screen
+import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.ui.theme.sec
-import com.example.bstore.view.PopularProductItem
+import com.example.bstore.view.popularProduct.PopularProductItem
 import com.example.bstore.viewmodel.ProductViewModel
 
 @Composable
 fun CategoryScreen (
     viewModel: ProductViewModel= hiltViewModel(),
     navController: NavController,
-    category:String
+    category:String,
 ) {
 
-    val products by viewModel.products.collectAsState()
+    val products by viewModel.catProduct.collectAsState()
     viewModel.getProductByCategory(category)
 
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(back)
+            .background(background)
     ) {
         Row(
             modifier = Modifier.background(Color.White).fillMaxWidth()
@@ -68,7 +64,7 @@ fun CategoryScreen (
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.clickable { navController.popBackStack() },
+                    modifier = Modifier.clickable { navController.navigate(Screen.Home.route) },
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = ""
                 )
@@ -111,6 +107,4 @@ fun CategoryScreen (
             }
         }
     }
-
-
 }

@@ -27,20 +27,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.bstore.NetworkStatusTracker
-import com.example.bstore.navigation.Screen.ProductDetails
-import com.example.bstore.ui.theme.back
+import com.example.bstore.utils.NetworkStatusTracker
+import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
-import com.example.bstore.view.LoginScreen
+import com.example.bstore.view.login.LoginScreen
 import com.example.bstore.view.ProductDetail
-import com.example.bstore.view.Screen.CategoryScreen
-import com.example.bstore.view.Screen.HomeScreen
-import com.example.bstore.view.Screen.NewInProductScreen
-import com.example.bstore.view.Screen.PopularScreen
-import com.example.bstore.view.Screen.CartScreen
-import com.example.bstore.view.Screen.ProfileScreen
-import com.example.bstore.view.Screen.SearchScreen
-import com.example.bstore.view.Screen.WishlistScreen
+import com.example.bstore.view.category.CategoryScreen
+import com.example.bstore.view.home.HomeScreen
+import com.example.bstore.view.newInProduct.NewInProductScreen
+import com.example.bstore.view.popularProduct.PopularScreen
+import com.example.bstore.view.cart.CartScreen
+import com.example.bstore.view.profile.ProfileScreen
+import com.example.bstore.view.search.SearchScreen
+import com.example.bstore.view.wish.WishlistScreen
+import com.example.bstore.viewmodel.LoginViewModel
 import com.example.bstore.viewmodel.ProductViewModel
 
 
@@ -48,12 +48,17 @@ import com.example.bstore.viewmodel.ProductViewModel
 @Composable
 fun BStore(
     context: Context,
-    viewModel: ProductViewModel = hiltViewModel()
-){
-
+    viewModel: ProductViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
+    val startDestination = if (loginViewModel.isLoggedIn()) {
+        Screen.Home.route
+    } else {
+        Screen.Login.route
+    }
 
-    val routesWithBottomBar= listOf(
+    val routesWithBottomBar = listOf(
         Screen.Home.route,
         Screen.Search.route,
         Screen.Wishlist.route,
@@ -71,27 +76,22 @@ fun BStore(
         Screen.Wishlist,
         Screen.Cart,
         Screen.Profile
-
     )
 
-
-
-    Scaffold (
+    Scaffold(
         bottomBar = {
-           val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
-            if (currentRoute in routesWithBottomBar ) {
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+            if (currentRoute in routesWithBottomBar) {
                 NavigationBar(
                     tonalElevation = 4.dp,
                     containerColor = Color.White
                 ) {
-
                     items.forEach { screen ->
                         NavigationBarItem(
                             colors = NavigationBarItemColors(
                                 selectedIconColor = onsec,
                                 selectedTextColor = Color.Black,
-                                selectedIndicatorColor = back,
+                                selectedIndicatorColor = background,
                                 unselectedIconColor = Color.Black,
                                 unselectedTextColor = Color.Black,
                                 disabledIconColor = Color.Black,
@@ -101,12 +101,11 @@ fun BStore(
                                 Icon(
                                     imageVector = when (screen) {
                                         Screen.Cart -> Icons.Default.ShoppingCartCheckout
-                                        Screen.Home->Icons.Default.Home
+                                        Screen.Home -> Icons.Default.Home
                                         Screen.Search -> Icons.Default.Search
                                         Screen.Wishlist -> Icons.Default.Bookmark
                                         Screen.Profile -> Icons.Default.ManageAccounts
                                         else -> Icons.Default.EmojiPeople
-
                                     },
                                     contentDescription = screen.route
                                 )
@@ -128,98 +127,81 @@ fun BStore(
             }
         }
     ) { innerPadding ->
-
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding),
+            startDestination = startDestination,
+            modifier = Modifier.padding(innerPadding)
         ) {
-
             composable(Screen.Login.route) {
-                LoginScreen(navController)
+                LoginScreen(navController, loginViewModel)
             }
-
             composable(Screen.Home.route) {
                 HomeScreen(
                     navController = navController,
-                    networkStatusTracker = NetworkStatusTracker(context),
+                    networkStatusTracker = NetworkStatusTracker(context)
                 )
             }
-
             composable(Screen.Profile.route) {
                 ProfileScreen(
-                    onLogout = {navController.navigate(Screen.Login.route)}
+                    onLogout = {
+                        loginViewModel.logout()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    },
+                    loginViewModel = loginViewModel
                 )
             }
-
-            composable(
-                route = Screen.Cart.route
-            ) {
-                CartScreen(navController,
-                    onProductClick = {  productId ->
-                        navController.navigate("${ProductDetails.route}/$productId")
-                    })
+            composable(route = Screen.Cart.route) {
+                CartScreen(
+                    navController,
+                    onProductClick = { productId ->
+                        navController.navigate("${Screen.ProductDetails.route}/$productId")
+                    }
+                )
             }
-
-            composable(Screen.Wishlist.route) { bakStackEntry ->
-              //  val productI = bakStackEntry.arguments?.getInt(Screen.PRODUCT_ID_ARG.route) ?: 0
-
+            composable(Screen.Wishlist.route) {
                 WishlistScreen(
                     onProductClick = { productId ->
-                        navController.navigate("${ProductDetails.route}/$productId")
+                        navController.navigate("${Screen.ProductDetails.route}/$productId")
                     },
-                    navController = navController,
-
+                    navController = navController
                 )
             }
-
-            composable(
-
-                route = Screen.Search.route
-            ) {
+            composable(route = Screen.Search.route) {
                 SearchScreen(
                     navController = navController,
                     networkStatusTracker = NetworkStatusTracker(context)
                 )
             }
-
             composable(
                 route = Screen.Category.route,
                 arguments = listOf(navArgument(Screen.Category.CATEGORY_NAME_ARG) {
                     type = NavType.StringType
                 })
             ) { backStackEntry ->
-                val categoryName =
-                    backStackEntry.arguments?.getString(Screen.Category.CATEGORY_NAME_ARG) ?: ""
+                val categoryName = backStackEntry.arguments?.getString(Screen.Category.CATEGORY_NAME_ARG) ?: ""
                 CategoryScreen(viewModel, navController, categoryName)
             }
-
             composable(Screen.PopularProductScreen.route) {
-                PopularScreen(
-                    navController = navController,
-                )
+                PopularScreen(navController = navController)
             }
-
             composable(Screen.NewInProductScreen.route) {
                 NewInProductScreen(navController)
             }
-
             composable(
                 route = Screen.ProductDetailsRoute.route,
                 arguments = listOf(navArgument(Screen.ProductIdArg.route) {
                     type = NavType.IntType
-                })
+                }),
+
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getInt(Screen.ProductIdArg.route) ?: 0
-
-                productId?.let {
-                    ProductDetail(
-                        productId = productId,
-                        navController = navController,
-                    )
-                }
+                ProductDetail(
+                    productId = productId,
+                    navController = navController,
+                )
             }
-
         }
     }
 }

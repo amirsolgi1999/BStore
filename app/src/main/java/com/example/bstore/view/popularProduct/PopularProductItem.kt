@@ -1,4 +1,4 @@
-package com.example.bstore.view
+package com.example.bstore.view.popularProduct
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,11 +34,8 @@ fun PopularProductItem(
 
     Column  (
         modifier = Modifier
-            .clickable {
-                navController.navigate("${Screen.ProductDetails.route}/${product.id}")
-
-            }
-            .padding(start = 4.dp, end = 4.dp, bottom = 8.dp)
+            .clickable { navController.navigate("${Screen.ProductDetails.route}/${product.id}") }
+        .padding(start = 4.dp, end = 4.dp, bottom = 8.dp)
     ){
         Column(
             modifier = Modifier
@@ -80,6 +77,7 @@ fun PopularProductItem(
                 Text(text = "${ product.price.toString() +"$"}", fontSize = 10.sp, color = Color.White)
 
             }
-        } }
+        }
+        }
     }
 }

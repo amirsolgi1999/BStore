@@ -1,4 +1,4 @@
-package com.example.bstore.view
+package com.example.bstore.view.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

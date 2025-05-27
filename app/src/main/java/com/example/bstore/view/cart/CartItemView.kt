@@ -1,4 +1,4 @@
-package com.example.bstore.view
+package com.example.bstore.view.cart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
@@ -47,9 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.bstore.model.cart.CartItem
-import com.example.bstore.ui.theme.back
+import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.ui.theme.sec
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,19 +61,20 @@ fun CartItemView(
     onClick: () ->Unit,
 ) {
 
-    val swipeThreshold = 60.dp 
+    val swipeThreshold = 60.dp
     val swipeThresholdPx = with(LocalDensity.current) { swipeThreshold.toPx() }
     val swipeState = rememberSwipeableState(initialValue = 0)
     val anchors = mapOf(
-        0f to 0, 
-        -swipeThresholdPx to 1 
+        0f to 0,
+        -swipeThresholdPx to 1
     )
 
+    val coroutineScope = rememberCoroutineScope()
 
     Card (
         modifier = Modifier.clickable {onClick()},
         colors = CardDefaults.cardColors(
-            containerColor = back
+            containerColor = background
         )
     ){
 
@@ -82,10 +85,13 @@ fun CartItemView(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(16.dp)
-                    .clickable { onRemove() },
+                    .clickable {
+                                onRemove()
+                                coroutineScope.launch { swipeState.animateTo(0) }
+                               },
                 imageVector = Icons.Default.DeleteOutline,
                 tint = onsec,
-                contentDescription = ""
+                contentDescription = "delete product from cart"
             )
             Row  (
                 modifier = Modifier
@@ -94,7 +100,8 @@ fun CartItemView(
                         state = swipeState,
                         anchors = anchors,
                         thresholds = { _, _ -> FractionalThreshold(0.3f) },
-                        orientation = Orientation.Horizontal
+                        orientation = Orientation.Horizontal,
+
                     )
                     .padding( vertical = 4.dp)
                     .clip(RoundedCornerShape(10.dp))
