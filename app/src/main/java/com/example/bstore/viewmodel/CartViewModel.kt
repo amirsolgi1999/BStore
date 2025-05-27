@@ -62,12 +62,11 @@ class CartViewModel @Inject constructor(
                 db.cartDao().delete(id)
                 Timber.d("Removed item")
                 loadCart()
+                _message.value="product remove!!"
 
             } catch (e: Exception) {
                 Timber.e(e.message)
                 _message.value="can't remove cart product!"
-
-
             }
         }
     }

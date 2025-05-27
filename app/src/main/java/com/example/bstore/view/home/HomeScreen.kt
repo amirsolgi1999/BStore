@@ -134,7 +134,6 @@ fun HomeScreen(
                             products = products,
                             newProducts = newProduct,
                             navController,
-                            networkStatusTracker
                         )
                     }
                 }
@@ -149,7 +148,6 @@ fun MainContent(
     products:List<Product>,
     newProducts:List<Product>,
     navController: NavController,
-    networkStatusTracker: NetworkStatusTracker
 ) {
 
     Column {

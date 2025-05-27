@@ -9,7 +9,6 @@ sealed class Screen(val route: String) {
     object Basket : Screen("BASKET")
     object Cart : Screen("Cart")
     object ProductIdArg : Screen("productId")
-    object ProductTitleArg : Screen("productTitle")
     object PopularProductScreen : Screen("PopularProductScreen")
     object NewInProductScreen : Screen("NewInProductScreen")
     object ProductDetails : Screen("product_details")

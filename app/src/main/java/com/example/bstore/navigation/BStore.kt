@@ -43,14 +43,13 @@ import com.example.bstore.view.wish.WishlistScreen
 import com.example.bstore.viewmodel.LoginViewModel
 import com.example.bstore.viewmodel.ProductViewModel
 
-
-
 @Composable
 fun BStore(
     context: Context,
     viewModel: ProductViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+
     val navController = rememberNavController()
     val startDestination = if (loginViewModel.isLoggedIn()) {
         Screen.Home.route

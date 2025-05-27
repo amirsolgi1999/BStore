@@ -25,9 +25,6 @@ class ProfileViewModel @Inject constructor(
             }catch (e:Exception){
                 Timber.e(e)
             }
-
-
-
         }
     }
 }

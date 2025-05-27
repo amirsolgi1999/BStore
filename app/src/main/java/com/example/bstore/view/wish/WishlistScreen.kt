@@ -190,7 +190,6 @@ fun WishlistItemView(
             Icon(
                 modifier = Modifier.weight(0.5f)
                    .clickable { onClickAdd() }
-
                 ,
                 imageVector = Icons.Default.AddShoppingCart,
                 contentDescription = "",
@@ -203,9 +202,6 @@ fun WishlistItemView(
                 contentDescription = ""
             )
         }
-
-
     }
-
 }
 

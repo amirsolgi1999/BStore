@@ -33,6 +33,9 @@ class ProductViewModel @Inject constructor(
     private val _newInProducts = MutableStateFlow<List<Product>>(emptyList())
     val newInProducts: StateFlow<List<Product>> = _newInProducts
 
+    private val _otherProduct = MutableStateFlow<List<Product>>(emptyList())
+    val otherProduct :StateFlow<List<Product>> = _otherProduct
+
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -67,6 +70,7 @@ class ProductViewModel @Inject constructor(
         loadPopularProducts()
         loadNewInProducts()
         loadWishlistAndCartIds()
+        loadOtherProducts()
     }
 
     fun loadPopularProducts() {
@@ -100,6 +104,24 @@ class ProductViewModel @Inject constructor(
                 Timber.e(e, "Failed to load new in products")
                 _isError.value = "${e.message}"
                 _newInProducts.value = emptyList()
+            } finally {
+                _isLoading.value = false
+                Timber.d("Finished loading new in products")
+            }
+        }
+    }
+    fun loadOtherProducts() {
+        viewModelScope.launch {
+            Timber.d("Loading new in products...")
+            _isLoading.value = true
+            try {
+                val products = productApiService.getNewInProducts(3).products
+                _otherProduct.value = products
+                Timber.d("Loaded  new in products", products.size)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load new in products")
+                _isError.value = "${e.message}"
+                _otherProduct.value = emptyList()
             } finally {
                 _isLoading.value = false
                 Timber.d("Finished loading new in products")
@@ -158,6 +180,7 @@ class ProductViewModel @Inject constructor(
         }
         Timber.d(" filtered popular products and filtered new products",
             _filteredPopularProducts.value.size, _filteredNewProducts.value.size)
+
     }
 
     fun onSearchQueryChange(query: String) {
@@ -169,7 +192,6 @@ class ProductViewModel @Inject constructor(
     fun getProductByCategory(category: String) {
         viewModelScope.launch {
             Timber.d("Loading products for category", category)
-            _isLoading.value = true
             try {
                 val products = productApiService.getWithCategory(category).products
                 _catProduct.value = products
@@ -181,11 +203,11 @@ class ProductViewModel @Inject constructor(
                 _message.value=e.message
                 _catProduct.value = emptyList()
             } finally {
-                _isLoading.value = false
                 Timber.d("Finished loading products for category", category)
             }
         }
     }
+
 
 
     fun loadWishlistAndCartIds() {
@@ -254,7 +276,8 @@ class ProductViewModel @Inject constructor(
     }
 
     fun getCarProByWCId(productId: Int):StateFlow<Product?>{
-        return _catProduct.map { product ->
+        Timber.d("Getting other product by ID", productId)
+        return _otherProduct.map { product ->
             product.find { it.id == productId }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),null)
     }

@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.R
+import com.example.bstore.model.category.Category
 import com.example.bstore.navigation.Screen
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.ui.theme.sec
@@ -40,19 +40,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun Categories(
     navController: NavController,
-    productViewModel: ProductViewModel= hiltViewModel()
+    productViewModel: ProductViewModel = hiltViewModel()
 ) {
-
     val configuration = LocalConfiguration.current
     val isLandScape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
     val message by productViewModel.message.collectAsState()
     val context = LocalContext.current
 
-
-    LaunchedEffect (message){
+    LaunchedEffect(message) {
         message?.let { msg ->
             launch {
-                Toast.makeText(context,msg,Toast.LENGTH_LONG).show()
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 delay(500)
                 productViewModel.clearMessage()
             }
@@ -66,100 +64,34 @@ fun Categories(
         fontWeight = FontWeight.Medium
     )
 
-    if (isLandScape){
-        Row(
-            modifier = Modifier
-                .padding(vertical = 4.dp, horizontal = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CategoryItem(
-                icon = R.drawable.tv,
-                text = "Tv",
-                navController = navController,
-                textA = "tv",
-            )
-            CategoryItem(
-                icon = R.drawable.audio,
-                text = "Audio",
-                navController = navController,
-                textA = "audio",
-            )
-            CategoryItem(
-                icon = R.drawable.console,
-                text = "Console",
-                navController = navController,
-                textA = "gaming",
-            )
-            CategoryItem(
-                icon = R.drawable.laptop,
-                text = "Laptop",
-                navController = navController,
-                textA = "laptop",
+    val categories = listOf(
+        Category(R.drawable.tv, "Tv", "tv"),
+        Category(R.drawable.audio, "Audio", "audio"),
+        Category(R.drawable.console, "Console", "gaming"),
+        Category(R.drawable.laptop, "Laptop", "laptop"),
+        Category(R.drawable.mobile, "Mobile", "mobile"),
+        Category(R.drawable.appliance, "Utensil", "appliances")
+    )
 
-            )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = 4.dp,
+                horizontal = if (isLandScape) 10.dp else 16.dp
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        categories.forEach { category ->
             CategoryItem(
-                icon = R.drawable.mobile,
-                text = "Mobile",
+                icon = category.icon,
+                text = category.text,
                 navController = navController,
-                textA = "mobile",
-            )
-            CategoryItem(
-                icon = R.drawable.appliance,
-                text = "Utensil",
-                navController = navController,
-                textA = "appliances",
-            )
-        }
-    }else{
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, bottom = 4.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CategoryItem(
-                icon = R.drawable.tv,
-                text = "Tv",
-                navController = navController,
-                textA = "tv",
-            )
-            CategoryItem(
-                icon = R.drawable.audio,
-                text = "Audio",
-                navController = navController,
-                textA = "audio",
-            )
-            CategoryItem(
-                icon = R.drawable.console,
-                text = "Console",
-                navController = navController,
-                textA = "gaming",
-
-            )
-            CategoryItem(
-                icon = R.drawable.laptop,
-                text = "Laptop",
-                navController = navController,
-                textA = "laptop",
-            )
-            CategoryItem(
-                icon = R.drawable.mobile,
-                text = "Mobile",
-                navController = navController,
-                textA = "mobile",
-
-            )
-            CategoryItem(
-                icon = R.drawable.appliance,
-                text = "Utensil",
-                navController = navController,
-                textA = "appliances",
+                textA = category.route
             )
         }
     }
-
 }
 
 @Composable
@@ -167,30 +99,26 @@ fun CategoryItem(
     icon: Int,
     text: String,
     navController: NavController,
-    textA:String,
+    textA: String
 ) {
-
+    val circleModifier = Modifier
+        .padding(start = 12.dp)
+        .size(50.dp)
+        .clip(CircleShape)
+        .background(sec)
+        .clickable {
+            navController.navigate(Screen.Category.createRoute(textA)) {
+                popUpTo(Screen.Home.route) { inclusive = false }
+                launchSingleTop = true
+            }
+        }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Column(
-            modifier = Modifier
-                .padding(start = 12.dp)
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(sec)
-                .clickable {
-
-                    navController.navigate(
-                            Screen.Category.createRoute(textA)
-                        ) {
-                            popUpTo(Screen.Home.route) { inclusive = false }
-                            launchSingleTop = true
-                        }
-
-                           },
+            modifier = circleModifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -205,3 +133,5 @@ fun CategoryItem(
         Text(text = text, modifier = Modifier.padding(start = 10.dp))
     }
 }
+
+

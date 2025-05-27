@@ -37,32 +37,30 @@ class WishlistViewModel @Inject constructor(
         viewModelScope.launch {
             _wishlist.value=db.wishlistDao().getAll()
             Timber.d(" Load Wishlist")
-
         }
     }
+
     fun addToCart(item: WishlistItem){
         viewModelScope.launch {
             Timber.d(" Loading add to cart")
-                try {
+            try {
                 val isAlreadyInCart = db.cartDao().getAllIds().contains(item.id)
-                if (!isAlreadyInCart){
+                if (!isAlreadyInCart) {
                     db.cartDao().insert(
-                        CartItem(item.id,item.title,item.price,item.image)
+                        CartItem(item.id, item.title, item.price, item.image)
                     )
                     Timber.d(" add to cart")
-                    _message.value="Add to cart"
-                }else{
-                    _message.value="Already in cart"
+                    _message.value = "Add to cart"
+                } else {
+                    _message.value = "Already in cart"
                     Timber.d(" in cart")
 
 
                 }
-            }catch (e:Exception){
-                    _message.value="failed to add"
-                    Timber.d("failed to add: ${e.message}")
-
-
-                }
+            } catch (e: Exception) {
+                _message.value = "failed to add"
+                Timber.d("failed to add: ${e.message}")
+            }
         }
     }
 

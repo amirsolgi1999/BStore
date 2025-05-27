@@ -32,6 +32,7 @@ import com.example.bstore.navigation.Screen
 import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.ui.theme.sec
+import com.example.bstore.utils.LoadingAndErrorView
 import com.example.bstore.view.popularProduct.PopularProductItem
 import com.example.bstore.viewmodel.ProductViewModel
 
@@ -42,69 +43,79 @@ fun CategoryScreen (
     category:String,
 ) {
 
+    val isError by viewModel.isError
+    val isLoading by viewModel.isLoading
     val products by viewModel.catProduct.collectAsState()
     viewModel.getProductByCategory(category)
 
 
-    Column(
+    LoadingAndErrorView(
+        isLoading = isLoading,
+        isError = isError,
         modifier = Modifier
-            .fillMaxSize()
-            .background(background)
     ) {
-        Row(
-            modifier = Modifier.background(Color.White).fillMaxWidth()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(background)
         ) {
             Row(
-                modifier = Modifier
-                    .height(56.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .background(Color.White),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.background(Color.White).fillMaxWidth()
             ) {
-                Icon(
-                    modifier = Modifier.clickable { navController.navigate(Screen.Home.route) },
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = ""
-                )
-                Column(
+                Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(sec)
+                        .height(56.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color.White),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        modifier = Modifier.clickable { navController.navigate(Screen.Home.route) },
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = ""
+                    )
                     Column(
                         modifier = Modifier
-                            .padding(4.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .height(35.dp)
-                            .background(onsec),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                            .background(sec)
                     ) {
-                        Text(
-                            category,
-                            color = sec,
-                            fontSize = 20.sp,
+                        Column(
                             modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                        )
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .height(35.dp)
+                                .background(onsec),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                category,
+                                color = sec,
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            items(products) { product ->
-                PopularProductItem(
-                    product = product,
-                    navController,
-                )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                items(products) { product ->
+                    PopularProductItem(
+                        product = product,
+                        navController,
+                    )
+                }
             }
         }
     }
+
 }

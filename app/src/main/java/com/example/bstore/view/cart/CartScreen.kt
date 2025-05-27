@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import com.example.bstore.ui.theme.onsec
 import com.example.bstore.utils.LoadingAndErrorView
 import com.example.bstore.viewmodel.CartViewModel
 import com.example.bstore.viewmodel.ProductViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -51,10 +54,20 @@ fun CartScreen(
 
     val isLoading by productViewModel.isLoading
     val isError by productViewModel.isError
+    val message by viewmodel.message.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     val cartList by viewmodel.cart.collectAsState()
     val context= LocalContext.current
 
+    LaunchedEffect (message){
+        message?.let { msg ->
+            launch {
+                Toast.makeText(context,msg,Toast.LENGTH_SHORT).show()
+                delay(100)
+                productViewModel.clearMessage()
+            }
+        }
+    }
 
     LoadingAndErrorView(
         isLoading = isLoading,
@@ -161,8 +174,6 @@ fun CartScreen(
             }
         }
     }
-
-
 }
 
 
