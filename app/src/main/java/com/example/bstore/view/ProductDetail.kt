@@ -1,6 +1,5 @@
 package com.example.bstore.view
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,12 +51,9 @@ fun ProductDetail(
     navController: NavController,
 ){
 
-    val configuration = LocalConfiguration.current
-    val isLandScape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     val context= LocalContext.current
-
-
-    val otherProduct by productViewModel.getCarProByWCId(productId).collectAsState()
+    val otherProduct by productViewModel.getOtherProductByWCId(productId).collectAsState()
     val newInProduct by productViewModel.getNewInProductByIdWC(productId).collectAsState()
     val popularProduct by productViewModel.getPopularProductByIdWC(productId).collectAsState(null)
     val wishlistIds by productViewModel.wishlistIds.collectAsState()
@@ -86,525 +81,379 @@ fun ProductDetail(
         modifier = Modifier
     ) {
         when {
+            popularProducts.contains(popularProduct) -> {
+                Column (
+                    modifier = Modifier
+                        .background(background)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ){
+                    Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(20.dp)
+                                .clickable { navController.popBackStack() }
+                        )
+                    }
+                    Row (
+                        modifier = Modifier.background(Color.White).fillMaxWidth()
+                    ){
 
-            else -> {
-                if (isLandScape) {
-                    Box(
-                        modifier = Modifier
-                            .background(background)
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                    ) {
 
-                        Column {
 
-                            Column(
-                                modifier = Modifier.background(Color.White).fillMaxWidth()
-                            ) {
-
-                                Row(
-                                    modifier = Modifier.background(Color.White).fillMaxWidth(),
-                                    verticalAlignment = Alignment.Top,
-                                    horizontalArrangement = Arrangement.Start
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBackIosNew,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .size(20.dp)
-                                            .clickable { navController.popBackStack() }
-                                    )
-                                }
-
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().background(background),
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(240.dp)
-                                            .background(Color.White),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        AsyncImage(
-                                            model = popularProduct?.image,
-                                            contentDescription = "product image",
-                                            modifier = Modifier.size(120.dp)
-                                        )
-                                    }
-                                    Column(
-                                        modifier = Modifier
-                                            .align(alignment = Alignment.BottomEnd)
-                                            .padding(end = 16.dp, top = 210.dp)
-                                            .clip(RoundedCornerShape(20.dp))
-                                            .size(100.dp, 56.dp)
-                                            .background(onsec),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = "${popularProduct?.price.toString()}$",
-                                            fontSize = 18.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                    }
-                                }
-                            }
-                            Column(
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(background)
+                        ){
+                            Column (
                                 modifier = Modifier
-                                    .padding(16.dp)
-                                    .fillMaxSize()
-                                    .background(background)
+                                    .fillMaxWidth()
+                                    .height(240.dp)
+                                    .background(Color.White),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                AsyncImage(
+                                    model = popularProduct?.image,
+                                    contentDescription = "product image",
+                                    modifier = Modifier.size(120.dp)
+                                )
+                            }
+                            Column (
+                                modifier = Modifier
+                                    .align(alignment = Alignment.BottomEnd)
+                                    .padding(end = 16.dp, top = 210.dp)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .size(100.dp,56.dp)
+                                    .background(onsec),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text(
+                                    text = "${popularProduct?.price.toString()}$",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                    Column (
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxSize()
+                            .background(background)
+                    ){
+                        popularProduct?.title?.let {
+                            Text(
+                                it,
+                                fontSize = 16.sp,
+                                maxLines = 2
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        popularProduct?.description?.let {
+                            Text(
+                                it,
+                                maxLines = 3
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+                        Row (
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                onClick = {productViewModel.addToWishlist(popularProduct!!)}
                             ) {
-                                popularProduct?.title?.let {
-                                    Text(
-                                        it,
-                                        fontSize = 16.sp,
-                                        maxLines = 2
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold, )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                popularProduct?.description?.let {
-                                    Text(
-                                        it,
-                                        maxLines = 3
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                Row(
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Button(
-                                        modifier = Modifier.fillMaxWidth().weight(1f),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                                        onClick = { productViewModel.addToWishlist(popularProduct!!) }
-                                    ) {
-                                        if (wishlistIds.contains(productId)) {
-                                            Text("In Wish")
-                                        } else {
-                                            Text("Add To Wish", fontSize = 12.sp)
-                                        }
-                                    }
-                                    Spacer(
-                                        modifier = Modifier.padding(
-                                            vertical = 16.dp,
-                                            horizontal = 8.dp
-                                        )
-                                    )
-                                    Button(
-                                        modifier = Modifier.fillMaxWidth().weight(2f),
-                                        onClick = { productViewModel.addToCart(popularProduct!!) },
-                                        colors = if (cartIds.contains(productId))
-                                            ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                                        else
-                                            ButtonDefaults.buttonColors(containerColor = onsec)
-                                    ) {
-                                        if (cartIds.contains(productId)) {
-                                            Text("In Cart", color = Color.White)
-                                        } else {
-                                            Text("Add To Cart", color = Color.White)
-                                        }
-                                    }
-
+                                if (wishlistIds.contains(productId)){
+                                    Text("In Wish", color = onsec)
+                                }else{
+                                    Text("Add To Wish", fontSize = 12.sp, color = onsec)
                                 }
                             }
+                            Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(2f),
+                                onClick = {productViewModel.addToCart(popularProduct!!)},
+                                colors = if (cartIds.contains(productId))
+                                    ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                                else
+                                    ButtonDefaults.buttonColors(containerColor = onsec)
+                            ) {
+                                if (cartIds.contains(productId)){
+                                    Text("In Cart", color = Color.White)
+                                }else{
+                                    Text("Add To Cart", color = Color.White)
+                                }
+                            }
+
                         }
 
                     }
                 }
-                else{
-                    when {
-                        popularProducts.contains(popularProduct) -> {
+
+            }
+            newInProducts.contains(newInProduct) ->{
+                Column (
+                    modifier = Modifier
+                        .background(background)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ){
+                    Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(20.dp)
+                                .clickable { navController.popBackStack() }
+                        )
+                    }
+                    Row (
+                        modifier = Modifier.background(Color.White).fillMaxWidth()
+                    ){
+
+
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(background)
+                        ){
                             Column (
                                 modifier = Modifier
-                                    .background(background)
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
+                                    .fillMaxWidth()
+                                    .height(240.dp)
+                                    .background(Color.White),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ){
-                                Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBackIosNew,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .size(20.dp)
-                                            .clickable { navController.popBackStack() }
-                                    )
+                                AsyncImage(
+                                    model = newInProduct?.image,
+                                    contentDescription = "product image",
+                                    modifier = Modifier.size(120.dp)
+                                )
+                            }
+                            Column (
+                                modifier = Modifier
+                                    .align(alignment = Alignment.BottomEnd)
+                                    .padding(end = 16.dp, top = 210.dp)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .size(100.dp,56.dp)
+                                    .background(onsec),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text(
+                                    text = "${newInProduct?.price.toString()}$",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                    Column (
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxSize()
+                            .background(background)
+                    ){
+                        newInProduct?.title?.let {
+                            Text(
+                                it,
+                                fontSize = 16.sp,
+                                maxLines = 2
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+                        newInProduct?.description?.let {
+                            Text(
+                                it,
+                                maxLines = 3
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+                        Row (
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                onClick = {productViewModel.addToWishlist(newInProduct!!)}
+                            ) {
+                                if (wishlistIds.contains(productId)){
+                                    Text("In Wish", color = onsec)
+                                }else{
+                                    Text("Add To Wish", fontSize = 12.sp, color = onsec)
                                 }
-                                Row (
-                                    modifier = Modifier.background(Color.White).fillMaxWidth()
-                                ){
-
-
-
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().background(background)
-                                    ){
-                                        Column (
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(240.dp)
-                                                .background(Color.White),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            AsyncImage(
-                                                model = popularProduct?.image,
-                                                contentDescription = "product image",
-                                                modifier = Modifier.size(120.dp)
-                                            )
-                                        }
-                                        Column (
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.BottomEnd)
-                                                .padding(end = 16.dp, top = 210.dp)
-                                                .clip(RoundedCornerShape(20.dp))
-                                                .size(100.dp,56.dp)
-                                                .background(onsec),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            Text(
-                                                text = "${popularProduct?.price.toString()}$",
-                                                fontSize = 18.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    }
-                                }
-                                Column (
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxSize()
-                                        .background(background)
-                                ){
-                                    popularProduct?.title?.let {
-                                        Text(
-                                            it,
-                                            fontSize = 16.sp,
-                                            maxLines = 2
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    popularProduct?.description?.let {
-                                        Text(
-                                            it,
-                                            maxLines = 3
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                    Row (
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ){
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(1f),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                                            onClick = {productViewModel.addToWishlist(popularProduct!!)}
-                                        ) {
-                                            if (wishlistIds.contains(productId)){
-                                                Text("In Wish", color = onsec)
-                                            }else{
-                                                Text("Add To Wish", fontSize = 12.sp, color = onsec)
-                                            }
-                                        }
-                                        Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(2f),
-                                            onClick = {productViewModel.addToCart(popularProduct!!)},
-                                            colors = if (cartIds.contains(productId))
-                                                ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                                            else
-                                                ButtonDefaults.buttonColors(containerColor = onsec)
-                                        ) {
-                                            if (cartIds.contains(productId)){
-                                                Text("In Cart", color = Color.White)
-                                            }else{
-                                                Text("Add To Cart", color = Color.White)
-                                            }
-                                        }
-
-                                    }
-
+                            }
+                            Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(2f),
+                                onClick = {productViewModel.addToCart(newInProduct!!)},
+                                colors = if (cartIds.contains(productId))
+                                    ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                                else
+                                    ButtonDefaults.buttonColors(containerColor = onsec)
+                            ) {
+                                if (cartIds.contains(productId)){
+                                    Text("In Cart", color = Color.White)
+                                }else{
+                                    Text("Add To Cart", color = Color.White)
                                 }
                             }
 
                         }
-                        newInProducts.contains(newInProduct) ->{
+
+                    }
+                }
+
+            }
+            else ->{
+                Column (
+                    modifier = Modifier
+                        .background(background)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ){
+                    Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(20.dp)
+                                .clickable { navController.popBackStack() }
+                        )
+                    }
+                    Row (
+                        modifier = Modifier.background(Color.White).fillMaxWidth()
+                    ){
+
+
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(background)
+                        ){
                             Column (
                                 modifier = Modifier
-                                    .background(background)
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
+                                    .fillMaxWidth()
+                                    .height(240.dp)
+                                    .background(Color.White),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ){
-                                Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBackIosNew,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .size(20.dp)
-                                            .clickable { navController.popBackStack() }
-                                    )
-                                }
-                                Row (
-                                    modifier = Modifier.background(Color.White).fillMaxWidth()
-                                ){
-
-
-
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().background(background)
-                                    ){
-                                        Column (
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(240.dp)
-                                                .background(Color.White),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            AsyncImage(
-                                                model = newInProduct?.image,
-                                                contentDescription = "product image",
-                                                modifier = Modifier.size(120.dp)
-                                            )
-                                        }
-                                        Column (
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.BottomEnd)
-                                                .padding(end = 16.dp, top = 210.dp)
-                                                .clip(RoundedCornerShape(20.dp))
-                                                .size(100.dp,56.dp)
-                                                .background(onsec),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            Text(
-                                                text = "${newInProduct?.price.toString()}$",
-                                                fontSize = 18.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    }
-                                }
-                                Column (
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxSize()
-                                        .background(background)
-                                ){
-                                    newInProduct?.title?.let {
-                                        Text(
-                                            it,
-                                            fontSize = 16.sp,
-                                            maxLines = 2
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                    newInProduct?.description?.let {
-                                        Text(
-                                            it,
-                                            maxLines = 3
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                    Row (
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ){
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(1f),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                                            onClick = {productViewModel.addToWishlist(newInProduct!!)}
-                                        ) {
-                                            if (wishlistIds.contains(productId)){
-                                                Text("In Wish", color = onsec)
-                                            }else{
-                                                Text("Add To Wish", fontSize = 12.sp, color = onsec)
-                                            }
-                                        }
-                                        Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(2f),
-                                            onClick = {productViewModel.addToCart(newInProduct!!)},
-                                            colors = if (cartIds.contains(productId))
-                                                ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                                            else
-                                                ButtonDefaults.buttonColors(containerColor = onsec)
-                                        ) {
-                                            if (cartIds.contains(productId)){
-                                                Text("In Cart", color = Color.White)
-                                            }else{
-                                                Text("Add To Cart", color = Color.White)
-                                            }
-                                        }
-
-                                    }
-
-                                }
+                                AsyncImage(
+                                    model = otherProduct?.image,
+                                    contentDescription = "product image",
+                                    modifier = Modifier.size(120.dp)
+                                )
                             }
-
+                            Column (
+                                modifier = Modifier
+                                    .align(alignment = Alignment.BottomEnd)
+                                    .padding(end = 16.dp, top = 210.dp)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .size(100.dp,56.dp)
+                                    .background(onsec),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text(
+                                    text = "${otherProduct?.price.toString()}$",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
-                        else ->{
-                            Column (
-                                modifier = Modifier
-                                    .background(background)
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState()),
-                            ){
-                                Row (modifier = Modifier.background(Color.White).fillMaxWidth()){
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBackIosNew,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .size(20.dp)
-                                            .clickable { navController.popBackStack() }
-                                    )
-                                }
-                                Row (
-                                    modifier = Modifier.background(Color.White).fillMaxWidth()
-                                ){
+                    }
+                    Column (
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxSize()
+                            .background(background)
+                    ){
+                        otherProduct?.title?.let {
+                            Text(
+                                it,
+                                fontSize = 16.sp,
+                                maxLines = 2
+                            )
+                        }
 
+                        Spacer(modifier = Modifier.height(16.dp))
 
+                        Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().background(background)
-                                    ){
-                                        Column (
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(240.dp)
-                                                .background(Color.White),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            AsyncImage(
-                                                model = otherProduct?.image,
-                                                contentDescription = "product image",
-                                                modifier = Modifier.size(120.dp)
-                                            )
-                                        }
-                                        Column (
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.BottomEnd)
-                                                .padding(end = 16.dp, top = 210.dp)
-                                                .clip(RoundedCornerShape(20.dp))
-                                                .size(100.dp,56.dp)
-                                                .background(onsec),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
-                                        ){
-                                            Text(
-                                                text = "${otherProduct?.price.toString()}$",
-                                                fontSize = 18.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    }
-                                }
-                                Column (
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxSize()
-                                        .background(background)
-                                ){
-                                    otherProduct?.title?.let {
-                                        Text(
-                                            it,
-                                            fontSize = 16.sp,
-                                            maxLines = 2
-                                        )
-                                    }
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                                    Spacer(modifier = Modifier.height(16.dp))
+                        otherProduct?.description?.let {
+                            Text(
+                                it,
+                                maxLines = 3
+                            )
+                        }
 
-                                    Text("Description", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                        Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-                                    otherProduct?.description?.let {
-                                        Text(
-                                            it,
-                                            maxLines = 3
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    Text("Buy Item", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                                    Row (
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ){
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(1f),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                                            onClick = {productViewModel.addToWishlist(otherProduct!!)}
-                                        ) {
-                                            if (wishlistIds.contains(productId)){
-                                                Text("In Wish", color = onsec)
-                                            }else{
-                                                Text("Add To Wish", fontSize = 12.sp, color = onsec)
-                                            }
-                                        }
-                                        Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
-                                        Button(
-                                            modifier = Modifier.fillMaxWidth().weight(2f),
-                                            onClick = {productViewModel.addToCart(otherProduct!!)},
-                                            colors = if (cartIds.contains(productId))
-                                                ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                                            else
-                                                ButtonDefaults.buttonColors(containerColor = onsec)
-                                        ) {
-                                            if (cartIds.contains(productId)){
-                                                Text("In Cart", color = Color.White)
-                                            }else{
-                                                Text("Add To Cart", color = Color.White)
-                                            }
-                                        }
-
-                                    }
-
+                        Row (
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                onClick = {productViewModel.addToWishlist(otherProduct!!)}
+                            ) {
+                                if (wishlistIds.contains(productId)){
+                                    Text("In Wish", color = onsec)
+                                }else{
+                                    Text("Add To Wish", fontSize = 12.sp, color = onsec)
                                 }
                             }
+                            Spacer(modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp))
+                            Button(
+                                modifier = Modifier.fillMaxWidth().weight(2f),
+                                onClick = {productViewModel.addToCart(otherProduct!!)},
+                                colors = if (cartIds.contains(productId))
+                                    ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                                else
+                                    ButtonDefaults.buttonColors(containerColor = onsec)
+                            ) {
+                                if (cartIds.contains(productId)){
+                                    Text("In Cart", color = Color.White)
+                                }else{
+                                    Text("Add To Cart", color = Color.White)
+                                }
+                            }
+
                         }
 
                     }

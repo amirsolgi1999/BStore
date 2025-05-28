@@ -275,12 +275,6 @@ class ProductViewModel @Inject constructor(
         _message.value = null
     }
 
-    fun getCarProByWCId(productId: Int):StateFlow<Product?>{
-        Timber.d("Getting other product by ID", productId)
-        return _otherProduct.map { product ->
-            product.find { it.id == productId }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),null)
-    }
 
     fun getPopularProductByIdWC(productId: Int): StateFlow<Product?> {
         Timber.d("Getting popular product by ID", productId)
@@ -294,5 +288,13 @@ class ProductViewModel @Inject constructor(
         return _newInProducts.map { newIn ->
             newIn.find { it.id == productId }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    }
+
+
+    fun getOtherProductByWCId(productId: Int):StateFlow<Product?>{
+        Timber.d("Getting other product by ID", productId)
+        return _otherProduct.map { product ->
+            product.find { it.id == productId }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),null)
     }
 }

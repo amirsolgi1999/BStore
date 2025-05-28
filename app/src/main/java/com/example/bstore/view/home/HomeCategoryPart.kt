@@ -42,8 +42,7 @@ fun Categories(
     navController: NavController,
     productViewModel: ProductViewModel = hiltViewModel()
 ) {
-    val configuration = LocalConfiguration.current
-    val isLandScape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
     val message by productViewModel.message.collectAsState()
     val context = LocalContext.current
 
@@ -76,10 +75,7 @@ fun Categories(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = 4.dp,
-                horizontal = if (isLandScape) 10.dp else 16.dp
-            ),
+            .padding(vertical = 4.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

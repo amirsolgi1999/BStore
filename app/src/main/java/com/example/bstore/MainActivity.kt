@@ -1,5 +1,6 @@
 package com.example.bstore
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BStoreTheme {
                 BStore(context = baseContext)
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         }
     }

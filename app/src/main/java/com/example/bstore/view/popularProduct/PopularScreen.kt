@@ -50,8 +50,6 @@ fun PopularScreen(
     navController: NavController,
     viewModel: ProductViewModel= hiltViewModel()
 ){
-    val configuration = LocalConfiguration.current
-    val isLandScape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val popularProducts by viewModel.popularProducts.collectAsState()
     val selectedCategories by viewModel.selectedCategories
@@ -151,32 +149,20 @@ fun PopularScreen(
             modifier = Modifier
         ) {
             when {
-            popularProducts.isEmpty() -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Can't find product",
-                        color = Color.Black,
-                        fontSize = 16.sp
-                    )
-                }
-            }
-            else -> {
-                if (isLandScape) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(4),
-                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp, end = 16.dp, top = 8.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        items(popularProducts) { product ->
-                            PopularProductItem(product, navController)
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
+                popularProducts.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Can't find product",
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        )
                     }
-                } else {
+                }
+
+                else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
-                        modifier = Modifier.padding(start = 16.dp,top=8.dp, end = 16.dp),
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -187,7 +173,6 @@ fun PopularScreen(
                     }
                 }
             }
-        }
         }
     }
 }

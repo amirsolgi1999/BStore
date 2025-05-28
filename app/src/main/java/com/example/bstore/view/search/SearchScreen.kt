@@ -134,9 +134,6 @@ fun SearchResponse(
     products:List<Product>,
     navController: NavController
 ){
-    val configuration = LocalConfiguration.current
-    val isLandScape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
-
 
     if (products.isEmpty()){
 
@@ -160,19 +157,7 @@ fun SearchResponse(
             }
         }
     }else{
-        if (isLandScape){
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                modifier = Modifier.padding(bottom = 4.dp, start = 16.dp, end = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                items(products){product ->
-                    PopularProductItem(product,navController)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }else{
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(bottom = 4.dp, start = 16.dp, end = 16.dp),
@@ -184,7 +169,6 @@ fun SearchResponse(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-        }
 
     }
 }
