@@ -75,7 +75,6 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.1.0")
     implementation ("androidx.compose.material:material:1.5.0")
 
-    // دیپندنسی آیکون‌های Material (اختیاری، اما برای استفاده از آیکون‌های آماده مثل Search)
     implementation ("androidx.compose.material:material-icons-extended:1.5.0")
 
     implementation("androidx.core:core-ktx:1.16.0")
@@ -101,22 +100,12 @@ dependencies {
     implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 
-    // Jetpack Compose
     implementation("androidx.compose.ui:ui:1.7.8")
     implementation("androidx.compose.material:material:1.7.8")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
     implementation("androidx.activity:activity-compose:1.10.1")
 
-    // Retrofit for network requests
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-
-    // Coroutine Dependencies
- //   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-  //  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
-
-    // Lifecycle
-  //  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-   // implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 }
