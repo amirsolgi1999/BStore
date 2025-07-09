@@ -2,7 +2,6 @@ package com.example.bstore.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.model.StoreApiService
 import com.example.bstore.model.RetrofitInstance.BASE_URL
 import com.example.bstore.model.appDatabase.StoreDatabase
@@ -55,9 +54,4 @@ object Module {
         ).build()
     }
 
-    @Provides
-    @Singleton
-    fun provideNetworkStatusTracker(@ApplicationContext context: Context): NetworkStatusTracker {
-        return NetworkStatusTracker(context)
-    }
 }

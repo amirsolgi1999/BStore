@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.R
 import com.example.bstore.model.product.Product
 import com.example.bstore.ui.theme.background
@@ -46,45 +45,11 @@ import com.example.bstore.viewmodel.ProductViewModel
 fun SearchScreen(
     viewModel: ProductViewModel= hiltViewModel(),
     navController: NavController,
-    networkStatusTracker: NetworkStatusTracker
 ){
 
 
     val searchQuery by viewModel.searchProduct
     val filterProducts by viewModel.filteredPopularProducts
-    val isConnected by networkStatusTracker.isConnected.observeAsState(initial = networkStatusTracker.isNetworkAvailable())
-    var showRetry by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isConnected) {
-        if (isConnected) {
-            viewModel.popularProducts
-            showRetry = false
-        } else {
-            showRetry = true
-        }
-    }
-    when{
-        !isConnected ->{
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("Your internet is down!")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { viewModel.popularProducts },
-                    colors = ButtonColors(
-                        containerColor = onsec,
-                        contentColor = Color.White,
-                        disabledContainerColor = onsec,
-                        disabledContentColor = Color.White
-                    )
-                ) {
-                    Text("Retry")
-                }
-            }
-        }
-        else ->{
 
             Column (
                 modifier = Modifier
@@ -124,8 +89,7 @@ fun SearchScreen(
                     }
                 }
             }
-        }
-    }
+
 
 }
 

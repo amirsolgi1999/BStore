@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.R
 import com.example.bstore.model.product.Product
 import com.example.bstore.navigation.Screen
@@ -55,7 +54,6 @@ import com.example.bstore.viewmodel.ProductViewModel
 fun HomeScreen(
     viewModel: ProductViewModel= hiltViewModel(),
     navController: NavController,
-    networkStatusTracker: NetworkStatusTracker
     ){
 
     val newProduct by viewModel.newInProducts.collectAsState()
@@ -66,45 +64,13 @@ fun HomeScreen(
     val isError by viewModel.isError
     val isLoading by viewModel.isLoading
 
-    val isConnected by networkStatusTracker.isConnected.observeAsState(initial = networkStatusTracker.isNetworkAvailable())
-    var showRetry by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isConnected) {
-        if (isConnected) {
-            viewModel.popularProducts
-            showRetry = false
-        } else {
-            showRetry = true
-        }
-    }
 
     LoadingAndErrorView(
         isLoading = isLoading,
         isError = isError,
         modifier = Modifier
     ) {
-        when {
-            !isConnected ->{
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Your internet is down!")
-                    Text("Check your internet connection!")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { navController.navigate(Screen.Home.route) },
-                        colors = ButtonColors(
-                            containerColor = onsec,
-                            contentColor = Color.White,
-                            disabledContainerColor = onsec,
-                            disabledContentColor = Color.White
-                        )) {
-                        Text("Retry")
-                    }
-                }
-            }
-            else ->{
+
                 Column (
                     modifier = Modifier
                         .fillMaxSize()
@@ -137,8 +103,6 @@ fun HomeScreen(
                         )
                     }
                 }
-            }
-        }
 
     }
 }

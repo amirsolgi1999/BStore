@@ -27,7 +27,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.bstore.utils.NetworkStatusTracker
 import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.view.login.LoginScreen
@@ -137,7 +136,6 @@ fun BStore(
             composable(Screen.Home.route) {
                 HomeScreen(
                     navController = navController,
-                    networkStatusTracker = NetworkStatusTracker(context)
                 )
             }
             composable(Screen.Profile.route) {
@@ -170,7 +168,6 @@ fun BStore(
             composable(route = Screen.Search.route) {
                 SearchScreen(
                     navController = navController,
-                    networkStatusTracker = NetworkStatusTracker(context)
                 )
             }
             composable(

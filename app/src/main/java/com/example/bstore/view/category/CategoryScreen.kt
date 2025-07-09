@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,7 +47,11 @@ fun CategoryScreen (
     val isError by viewModel.isError
     val isLoading by viewModel.isLoading
     val products by viewModel.catProduct.collectAsState()
-    viewModel.getProductByCategory(category)
+
+    LaunchedEffect(category) {
+        viewModel.getProductByCategory(category)
+
+    }
 
 
     LoadingAndErrorView(

@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.bstore.navigation.BStore
 import com.example.bstore.ui.theme.BStoreTheme
-import com.example.bstore.utils.NetworkStatusTracker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
