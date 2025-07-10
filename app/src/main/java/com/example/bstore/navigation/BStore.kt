@@ -30,7 +30,7 @@ import androidx.navigation.navArgument
 import com.example.bstore.ui.theme.background
 import com.example.bstore.ui.theme.onsec
 import com.example.bstore.view.login.LoginScreen
-import com.example.bstore.view.ProductDetail
+import com.example.bstore.view.productDetail.ProductDetail
 import com.example.bstore.view.category.CategoryScreen
 import com.example.bstore.view.home.HomeScreen
 import com.example.bstore.view.newInProduct.NewInProductScreen
